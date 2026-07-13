@@ -23,7 +23,7 @@ class User(Base):
     quiz_attempts = relationship("QuizAttempt", back_populates="user", cascade="all, delete-orphan")
 
 
-# Πίνακας θεμάτων σχετικά με την Java
+# Πίνακας θεμάτων σχετικά με τη Java
 class Topic(Base):
     __tablename__ = "topics"
 
@@ -31,8 +31,8 @@ class Topic(Base):
     name = Column(String)
     description = Column(Text)
 
-    masteries = relationship("StudentMastery", back_populates="topic")
-    questions = relationship("Question", back_populates="topic")
+    masteries = relationship("StudentMastery", back_populates="topic", cascade="all, delete-orphan")
+    questions = relationship("Question", back_populates="topic", cascade="all, delete-orphan")
 
 
 # Πίνακας που δείχνει το ποσοστό κατανοήσης των φοιτητών

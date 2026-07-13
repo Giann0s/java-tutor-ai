@@ -68,3 +68,27 @@ def get_current_admin(current_user: user_dependency):
 
 
 admin_dependency = Annotated[User, Depends(get_current_admin)]
+
+
+def get_current_student(current_user: user_dependency):
+    if current_user.role != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Απαιτείται πρόσβαση μαθητή."
+        )
+    return current_user
+
+
+student_dependency = Annotated[User, Depends(get_current_student)]
+
+
+def get_current_professor(current_user: user_dependency):
+    if current_user.role != "professor":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Απαιτείται πρόσβαση καθηγητή."
+        )
+    return current_user
+
+
+professor_dependency = Annotated[User, Depends(get_current_professor)]
