@@ -1,1 +1,1 @@
-from app.models import attempt, chat, quiz, user
+from app.models import attempt, chat, exercise, user

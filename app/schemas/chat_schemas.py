@@ -7,6 +7,6 @@ class ChatRequest(BaseModel):
 
 
 class ConversationResponse(BaseModel):
-    conversation_id: str
+    conversation_id: int
     title: str
     ai_response: str
