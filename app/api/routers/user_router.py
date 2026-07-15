@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Path
 from starlette import status
 
 from app.api.dependencies import db_dependency, admin_dependency, user_dependency
-from app.models.user import User
 from app.services import user_service
 from app.schemas.user_schemas import CreateUser, UserResponse, UpdateUser, UpdatePassword
 
@@ -96,7 +95,7 @@ async def soft_delete_user(db: db_dependency, user: user_dependency):
     user_service.soft_delete_user(db, user)
 
 
-@router.delete("/{user_id", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def admin_soft_delete_user(db: db_dependency, admin: admin_dependency, user_id: int = Path(gt=0)):
     target_user = user_service.get_user_by_id(db, user_id)
     if target_user is None:
