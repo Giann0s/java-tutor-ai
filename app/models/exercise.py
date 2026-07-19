@@ -28,9 +28,8 @@ class Question(Base):
     topic_id = Column(Integer, ForeignKey("topics.id"))
     question_type = Column(String)  # Είδος ερώτησης (πολλαπλής, συγγραφή κώδικα)
     content = Column(Text)
-    correct_answer = Column(Text)  # Ενδεικτική σωστή απάντηση
+    correct_answer = Column(Text, nullable=True)  # Ενδεικτική σωστή απάντηση (για ασκήσεις ανάπτυξης κώδικα)
     points = Column(Integer)
-    is_generated_by_llm = Column(Boolean)
 
     exercise = relationship("Exercise", back_populates="questions")
     topic = relationship("Topic", back_populates="questions")
