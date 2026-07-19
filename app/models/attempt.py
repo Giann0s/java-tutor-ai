@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, Float, func
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 
@@ -10,9 +10,9 @@ class ExerciseAttempt(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     exercise_id = Column(Integer, ForeignKey("exercise.id"))
     status = Column(String)
-    total_score = Column(Integer)
-    started_at = Column(DateTime)
-    completed_at = Column(DateTime)
+    total_score = Column(Float)
+    started_at = Column(DateTime(timezone=True), server_default=func.now())
+    completed_at = Column(DateTime(timezone=True))
 
     user = relationship("User", back_populates="exercise_attempts")
     exercise = relationship("Exercise", back_populates="exercise_attempts")
@@ -28,7 +28,7 @@ class StudentAnswer(Base):
     provided_answer = Column(Text)
     is_correct = Column(Boolean)
     llm_feedback = Column(Text)
-    score_awarded = Column(Integer)
+    score_awarded = Column(Float)
 
     exercise_attempt = relationship("ExerciseAttempt", back_populates="student_answers")
     question = relationship("Question", back_populates="student_answers")

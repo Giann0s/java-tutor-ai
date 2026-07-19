@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -10,3 +12,9 @@ class ConversationResponse(BaseModel):
     conversation_id: int
     title: str
     ai_response: str
+
+
+class LLMOutput(BaseModel):
+    reply: str
+    topic_id: Optional[int] = None
+    severity: Optional[str] = None
