@@ -45,7 +45,6 @@ class StudentMastery(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     topic_id = Column(Integer, ForeignKey("topics.id"))
     mastery_level = Column(Float)  # ποσοστό κατανόησης
-    last_assessed_at = Column(DateTime)
 
     user = relationship("User", back_populates="masteries")
     topic = relationship("Topic", back_populates="masteries")

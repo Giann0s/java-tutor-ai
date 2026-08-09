@@ -29,6 +29,8 @@ async def llm_chat(db: db_dependency,
             detail="Υπήρξε πρόβλημα στην επικοινωνία με το LLM."
         )
 
+    # Χρήση των background tasks για υπολογισμό του mastery
+    # για να μην καθυστερεί η επιστροφή της απάντησης στον χρήστη.
     if ai_response.get("topic_id") and ai_response.get("severity"):
         background_tasks.add_task(
             calculate_mastery_code_feedback,

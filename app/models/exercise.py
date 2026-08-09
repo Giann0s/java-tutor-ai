@@ -11,8 +11,8 @@ class Exercise(Base):
     title = Column(String)
     keywords = Column(String, nullable=True)
     creator_id = Column(Integer, ForeignKey("users.id"))
-    is_practice = Column(Boolean, default=False)  # ελέγχει αν είναι επίσημη εξέταση/άσκηση από τον καθηγητή ή όχι
     created_at = Column(DateTime)
+    is_public = Column(Boolean, default=False)
 
     creator = relationship("User", back_populates="exercises")
     questions = relationship("Question", back_populates="exercise", cascade="all, delete-orphan")
