@@ -6,7 +6,8 @@ from google.genai import types
 from app.core.config import settings
 from app.models.chat import Message
 from app.schemas.chat_schemas import LLMOutput
-from app.schemas.exercise_schemas import CodeGeneration, MCQGeneration, ExerciseSubmission, LLMCodeGrading
+from app.schemas.exercise_schemas import CodeGeneration, MCQGeneration, ExerciseSubmission, LLMCodeGrading, \
+    ProfessorMCQTest, ProfessorCodeTest
 
 client = genai.Client(api_key=settings.gemini_api_key)
 
@@ -45,17 +46,22 @@ def llm_chat(new_message: str, db_messages: list[Message], dynamic_topics: str):
             )
         )
 
-    # Δημιουργία ενός chat_session ώστε το μοντέλο να αποκτήσει μνήμη
-    chat_session = client.chats.create(
-        model='gemini-2.5-flash',
-        history=gemini_history,
-        config=types.GenerateContentConfig(
-            system_instruction=tutor_instructions,
-            temperature=0.3,
-            response_mime_type="application/json",  # To LLM επιστρέφει JSON.
-            response_schema=LLMOutput
+    try:
+        # Δημιουργία ενός chat_session ώστε το μοντέλο να αποκτήσει μνήμη
+        chat_session = client.chats.create(
+            model='gemini-2.5-flash',
+            history=gemini_history,
+            config=types.GenerateContentConfig(
+                system_instruction=tutor_instructions,
+                temperature=0.3,
+                response_mime_type="application/json",  # To LLM επιστρέφει JSON.
+                response_schema=LLMOutput
+            )
         )
-    )
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to contact LLM: {str(e)}")
+        raise RuntimeError("Αποτυχία επικοινωνίας με το LLM.")
 
     response = chat_session.send_message(new_message)
     parsed_response = LLMOutput.model_validate_json(response.text)
@@ -100,7 +106,7 @@ def create_code_exercise(topic_name: str, topic_description: str) -> CodeGenerat
         raise RuntimeError(f"Αποτυχία επικοινωνίας με το LLM για τη δημιουργία άσκησης.")
 
 
-def create_mcq_exercise(topic_name: str, topic_description: str) -> MCQGeneration:
+def create_mcq_exercise(topic_name: str, topic_description: str):
     generator_instructions = f"""
         Είσαι ένας έμπειρος καθηγητής προγραμματισμού σε Πανεπιστήμιο. Ο σκοπός σου είναι να 
         δημιουργείς στοχευμένες ερωτήσεις πολλαπλής επιλογής (MCQ) πάνω στη Java για τους φοιτητές σου.
@@ -185,3 +191,134 @@ def grade_code_exercise(question_content: str, student_code: str, max_points: in
         logging.error(f"Failed to generate code grading: {str(e)}")
         raise RuntimeError("Αποτυχία επικοινωνίας με το LLM για τη διόρθωση κώδικα.")
 
+
+def llm_chat_professor(new_message: str, db_messages: list[Message]):
+    instructions = f"""
+    Είσαι ένας εξαιρετικά καταρτισμένος βοηθός (AI Assistant) και σύμβουλος για έναν Καθηγητή Πληροφορικής Πανεπιστημιακού επιπέδου, με ειδίκευση στη Java και τον Προγραμματισμό.
+    Ο συνομιλητής σου ΔΕΝ είναι φοιτητής, αλλά ο ΙΔΙΟΣ Ο ΚΑΘΗΓΗΤΗΣ.
+    
+    ΣΚΟΠΟΣ ΣΟΥ:
+    Να τον βοηθάς στον σχεδιασμό μαθημάτων, στη δημιουργία εκπαιδευτικού υλικού, στην εύρεση ιδεών για απαιτητικές εργασίες/projects, στη συγγραφή και βελτιστοποίηση πολύπλοκου κώδικα, και στον σχεδιασμό διαγωνισμάτων.
+    
+    ΤΟΝΟΣ ΚΑΙ ΥΦΟΣ:
+    Επαγγελματικό, συναδελφικό, άμεσο και απολύτως τεχνικά ακριβές. Απευθύνεσαι σε έναν ειδικό του χώρου, οπότε μην υπεραπλουστεύεις τις έννοιες και χρησιμοποίησε ορθή ακαδημαϊκή και τεχνολογική ορολογία.
+    
+    ΚΑΝΟΝΕΣ ΕΞΟΔΟΥ (JSON SCHEMA):
+    Το σύστημα περιμένει υποχρεωτικά την απάντησή σου σε μορφή JSON με βάση το προκαθορισμένο schema (reply, topic_id, severity).
+    - Στο πεδίο `reply`: Γράψε την αναλυτική απάντησή σου προς τον καθηγητή.
+    - Τα πεδία `topic_id` και `severity`: ΠΡΕΠΕΙ ΝΑ ΕΙΝΑΙ ΠΑΝΤΑ null. Αυτά τα πεδία χρησιμοποιούνται μόνο στο σύστημα των φοιτητών και δεν έχουν καμία χρησιμότητα εδώ.
+    """
+
+    gemini_history = []
+    for msg in db_messages:
+        gemini_history.append(
+            types.Content(
+                role=msg.sender_role,
+                parts=[types.Part.from_text(text=msg.content)]
+            )
+        )
+
+    try:
+        chat_session = client.chats.create(
+            model='gemini-2.5-flash',
+            history=gemini_history,
+            config=types.GenerateContentConfig(
+                system_instruction=instructions,
+                temperature=0.3,
+                response_mime_type='application/json',
+                response_schema=LLMOutput
+            )
+        )
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to contact LLM: {str(e)}")
+        raise RuntimeError("Αποτυχία επικοινωνίας με το LLM.")
+    response = chat_session.send_message(new_message)
+    parsed_response = LLMOutput.model_validate_json(response.text)
+    return parsed_response
+
+
+def create_professor_mcq_test(keywords: str, dynamic_topics: str, num_questions: int = 5):
+    generator_instructions = f"""
+    Είσαι ένας έμπειρος καθηγητής Πανεπιστημίου με ειδίκευση στην Πληροφορική και τον προγραμματισμό (Java). 
+    Ο σκοπός σου είναι να δημιουργήσεις ένα απαιτητικό, ακαδημαϊκού επιπέδου τεστ πολλαπλής επιλογής.
+
+    ΛΕΞΕΙΣ ΚΛΕΙΔΙΑ (KEYWORDS) ΑΞΙΟΛΟΓΗΣΗΣ: {keywords}
+
+    ΑΥΣΤΗΡΟΙ ΚΑΝΟΝΕΣ ΔΗΜΙΟΥΡΓΙΑΣ:
+    1. Δομή & Πλήθος: Δημιούργησε ΑΚΡΙΒΩΣ {num_questions} ερωτήσεις. Κάθε ερώτηση πρέπει να εξετάζει μια διαφορετική, στοχευμένη πτυχή από τα Keywords.
+    2. Μοναδική Ορθότητα: Μόνο μία είναι η σωστή απάντηση στο καθένα. Φρόντισε οι υπόλοιπες τρεις επιλογές (distractors) να είναι αληθοφανείς, αλλά τεχνικά λανθασμένες.
+    3. Πλήρης Εκφώνηση (Σημαντικό!): Το πεδίο `text` πρέπει να είναι αυθύπαρκτο. Αν η ερώτηση βασίζεται σε απόσπασμα κώδικα, ο κώδικας ΠΡΕΠΕΙ να ενσωματωθεί μέσα στο `text` (χρησιμοποίησε \n για αλλαγές γραμμής, π.χ. "Δίνεται ο κώδικας:\nint x = 5;\n...").
+    4. Αυστηρό Format Απάντησης: Το πεδίο `correct_option` ΠΡΕΠΕΙ να περιέχει ΑΥΣΤΗΡΑ και ΜΟΝΟ ένα αγγλικό κεφαλαίο γράμμα: A, B, C, ή D. Απαγορεύεται οποιαδήποτε άλλη λέξη ή επεξήγηση σε αυτό το πεδίο.
+    5. Αντιστοίχιση Ύλης: Για κάθε ερώτηση, διάλεξε το πιο κατάλληλο 'topic_id' από την παρακάτω διαθέσιμη ύλη.
+
+    ΔΙΑΘΕΣΙΜΑ TOPICS:
+    {dynamic_topics}
+    """
+
+    prompt = f"Φτιάξε το τεστ πολλαπλής επιλογής βασισμένο στα keywords: '{keywords}'."
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=generator_instructions,
+                temperature=0.7,
+                response_mime_type="application/json",
+                response_schema=ProfessorMCQTest,
+            )
+        )
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to generate Professor MCQ Test: {str(e)}")
+        raise RuntimeError("Αποτυχία επικοινωνίας με το LLM για τη δημιουργία της άσκησης πολλαπλής.")
+
+    return ProfessorMCQTest.model_validate_json(response.text)
+
+
+def create_professor_code_test(keywords: str, dynamic_topics: str, num_questions: int):
+    generator_instructions = f"""
+    Είσαι ένας έμπειρος καθηγητής Πανεπιστημίου με ειδίκευση στη Java και τον Αντικειμενοστρεφή Προγραμματισμό.
+    Ο σκοπός σου είναι να δημιουργήσεις ένα απαιτητικό, ακαδημαϊκού επιπέδου διαγώνισμα/εργασία ανάπτυξης κώδικα για τους φοιτητές σου.
+    
+    ΛΕΞΕΙΣ ΚΛΕΙΔΙΑ (KEYWORDS) ΑΞΙΟΛΟΓΗΣΗΣ: 
+    {keywords}
+    
+    ΑΥΣΤΗΡΟΙ ΚΑΝΟΝΕΣ ΔΗΜΙΟΥΡΓΙΑΣ:
+    1. Πλήθος Ερωτημάτων: Δημιούργησε ΑΚΡΙΒΩΣ {num_questions} ξεχωριστά ερωτήματα ανάπτυξης κώδικα.
+    2. Ποικιλία: Κάθε ερώτημα πρέπει να εξετάζει μια διαφορετική, στοχευμένη πτυχή από τα Keywords.
+    3. Αντιστοίχιση Ύλης: Για κάθε ερώτημα, ΠΡΕΠΕΙ να διαλέξεις το πιο κατάλληλο 'topic_id' από την παρακάτω διαθέσιμη ύλη:
+        
+    ΔΙΑΘΕΣΙΜΑ TOPICS:
+    {dynamic_topics}
+    
+    ΟΔΗΓΙΕΣ ΠΕΡΙΕΧΟΜΕΝΟΥ (Για κάθε ερώτημα):
+    - `description`: Πρέπει να περιγράφει αναλυτικά, βήμα-προς-βήμα και με σαφήνεια το πρόβλημα στα Ελληνικά.
+    - `starting_code` (ΚΡΙΣΙΜΟ): Πρέπει να περιέχει ΜΟΝΟ τον βασικό σκελετό (ονόματα κλάσεων, υπογραφές μεθόδων). ΑΠΑΓΟΡΕΥΕΤΑΙ ΑΥΣΤΗΡΑ να συμπεριλάβεις την υλοποίηση, τη λογική ή τον κώδικα της λύσης σε αυτό το πεδίο. Το σώμα των μεθόδων πρέπει να είναι άδειο. 
+    Χρησιμοποίησε μόνο σχόλια της μορφής `// TODO: [Οδηγία]` για να καθοδηγήσεις τον φοιτητή στο τι πρέπει να γράψει. Επίσης δεν είναι υποχρεωτικό πεδίο.
+    - `reference_solution`: Ο πλήρης, λειτουργικός και βέλτιστος κώδικας Java που λύνει το πρόβλημα. Πρέπει να ταιριάζει απόλυτα με τον σκελετό που άφησες στο `starting_code`.
+    - `difficulty`: Πρέπει να είναι αυστηρά μία από τις τιμές: "EASY", "MEDIUM", "HARD".
+    - `points`: Δώσε μια λογική βαθμολογία (π.χ. 10, 15, ή 20) ανάλογα με τη δυσκολία του ερωτήματος.
+    """
+
+    prompt = f"Φτιάξε ένα διαγώνισμα κώδικα βασισμένο στα keywords: '{keywords}'."
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=generator_instructions,
+                temperature=0.7,  # 0.7 για να υπάρχει ποικιλία στα σενάρια των ασκήσεων
+                response_mime_type="application/json",
+                # ΠΡΟΣΟΧΗ: Χρησιμοποιούμε το νέο schema εδώ!
+                response_schema=ProfessorCodeTest
+            )
+        )
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to generate Professor Code Test: {str(e)}")
+        raise RuntimeError("Αποτυχία επικοινωνίας με το LLM για τη δημιουργία της άσκησης κώδικα.")
+
+    return ProfessorCodeTest.model_validate_json(response.text)
