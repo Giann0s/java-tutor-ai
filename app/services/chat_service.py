@@ -8,7 +8,7 @@ from app.models.user import Topic
 from app.services import llm_service
 
 
-def process_student_message(db: Session, user_id: int, conversation_id: int, user_text: str):
+def process_chat_message(db: Session, user_id: int, conversation_id: int, user_text: str, is_professor: bool = False):
     if conversation_id == 0:
         dynamic_title = user_text[:35] + "..." if len(user_text) > 35 else user_text
 
@@ -43,19 +43,25 @@ def process_student_message(db: Session, user_id: int, conversation_id: int, use
     db.add(user_message)
     db.commit()
 
-    # Παίρνουμε τα topics απο τη βάση ώστε να γνωρίζει πως να κάνει
-    # τις αντιστοιχίσεις το LLM.
-    all_topics = db.query(Topic).all()
-    topics_string = ""
-    for t in all_topics:
-        topics_string += f"{t.id}: {t.name} ({t.description})\n"
-
     try:
-        ai_output = llm_service.llm_chat(
-            new_message=user_text,
-            db_messages=previous_messages,
-            dynamic_topics=topics_string
-        )
+        if is_professor:
+            ai_output = llm_service.llm_chat_professor(
+                new_message=user_text,
+                db_messages=previous_messages
+            )
+        else:
+            # Παίρνουμε τα topics απο τη βάση ώστε να γνωρίζει πως να κάνει
+            # τις αντιστοιχίσεις το LLM.
+            all_topics = db.query(Topic).all()
+            topics_string = ""
+            for t in all_topics:
+                topics_string += f"{t.id}: {t.name} ({t.description})\n"
+
+            ai_output = llm_service.llm_chat(
+                new_message=user_text,
+                db_messages=previous_messages,
+                dynamic_topics=topics_string
+            )
     except Exception as e:
         logging.error(f"LLM Error: {str(e)}")
         return False

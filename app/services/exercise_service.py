@@ -57,7 +57,7 @@ def generate_code_exercise(db: Session, user_id: int, topic_id: Optional[int] = 
         exercise_id=new_exercise.id,
         topic_id=target_topic.id,
         question_type="code",
-        content=json.dumps(question_content_dict),
+        content=json.dumps(question_content_dict, ensure_ascii=False),
         correct_answer=llm_exercise_data.reference_solution,
         points=10
     )
@@ -104,7 +104,7 @@ def generate_mcq_exercise(db: Session, user_id: int, topic_id: Optional[int] = N
         exercise_id=new_exercise.id,
         topic_id=target_topic.id,
         question_type="mcq",
-        content=json.dumps(question_content_dict),
+        content=json.dumps(question_content_dict, ensure_ascii=False),
         correct_answer=None,
         points=5
     )
@@ -122,7 +122,8 @@ def generate_mcq_exercise(db: Session, user_id: int, topic_id: Optional[int] = N
 
     for letter, text in options_mapping.items():
         # Ελέγχουμε δυναμικά αν αυτό το γράμμα είναι η σωστή επιλογή
-        is_this_choice_correct = (letter == llm_mcq_data.correct_option)
+        safe_correct_option = str(llm_mcq_data.correct_option).strip().upper()
+        is_this_choice_correct = (letter == safe_correct_option)
 
         new_choice = Choice(
             question_id=new_question.id,
@@ -155,7 +156,7 @@ def get_exercises(db: Session, user_id: int):
     return exercises
 
 
-def get_full_exercise(db: Session, exercise_id: int, user_id: int):
+def get_full_exercise(db: Session, exercise_id: int, user_id: int, is_professor: bool = False):
     exercise = db.query(Exercise).options(
         joinedload(Exercise.questions).joinedload(Question.choices)
     ).filter(
@@ -174,11 +175,13 @@ def get_full_exercise(db: Session, exercise_id: int, user_id: int):
 
     has_solved = attempt is not None
 
+    can_view_answers = has_solved or is_professor
+
     questions_out = []
     for q in exercise.questions:
         content_dict = json.loads(q.content) if q.content else {}
 
-        if not has_solved and "explanation" in content_dict:
+        if not can_view_answers and "explanation" in content_dict:
             content_dict.pop("explanation", None)
 
         choices_out = []
@@ -186,7 +189,7 @@ def get_full_exercise(db: Session, exercise_id: int, user_id: int):
             choices_out.append({
                 "id": c.id,
                 "text": c.text,
-                "is_correct": c.is_correct if has_solved else None
+                "is_correct": c.is_correct if can_view_answers else None
             })
 
         questions_out.append({
@@ -194,7 +197,7 @@ def get_full_exercise(db: Session, exercise_id: int, user_id: int):
             "question_type": q.question_type,
             "content": content_dict,
             "points": q.points,
-            "correct_answer": q.correct_answer if has_solved else None,
+            "correct_answer": q.correct_answer if can_view_answers else None,
             "choices": choices_out
         })
 
@@ -273,3 +276,106 @@ def submit_exercise(db: Session, exercise_id: int, user_id: int, submission: Exe
     db.refresh(new_attempt)
 
     return new_attempt
+
+
+def generate_official_mcq_test(db: Session, professor_id: int, keywords: str, num_questions: int = 5):
+    all_topics = db.query(Topic).all()
+    # Βάζουμε τα topics σε ενα ενιαίο string
+    topics_string = "".join([f"{t.id}: {t.name} ({t.description})\n" for t in all_topics])
+
+    llm_test_data = llm_service.create_professor_mcq_test(
+        keywords=keywords,
+        dynamic_topics=topics_string,
+        num_questions=num_questions
+    )
+
+    new_exercise = Exercise(
+        title=llm_test_data.title,
+        keywords=keywords,
+        creator_id=professor_id,
+        created_at=datetime.now(),
+        is_public=True
+    )
+    db.add(new_exercise)
+    db.flush()
+
+    for q_data in llm_test_data.questions:
+        question_content_dict = {
+            "text": q_data.question_text,
+            "explanation": q_data.explanation
+        }
+
+        new_question = Question(
+            exercise_id=new_exercise.id,
+            topic_id=q_data.topic_id,
+            question_type="mcq",
+            content=json.dumps(question_content_dict, ensure_ascii=False),
+            points=5
+        )
+        db.add(new_question)
+        db.flush()
+
+        options_mapping = {
+            "A": q_data.option_a,
+            "B": q_data.option_b,
+            "C": q_data.option_c,
+            "D": q_data.option_d
+        }
+
+        for letter, text in options_mapping.items():
+            safe_correct_option = str(q_data.correct_option).strip().upper()
+            is_this_choice_correct = (letter == safe_correct_option)
+            new_choice = Choice(
+                question_id=new_question.id,
+                text=text,
+                is_correct=is_this_choice_correct
+            )
+            db.add(new_choice)
+
+    db.commit()
+    db.refresh(new_exercise)
+
+    return new_exercise
+
+
+def generate_official_code_test(db: Session, professor_id: int, keywords: str, num_questions: int = 3):
+    all_topics = db.query(Topic).all()
+    # Βάζουμε τα topics σε ενα ενιαίο string
+    topics_string = "".join([f"{t.id}: {t.name} ({t.description})\n" for t in all_topics])
+
+    llm_test_data = llm_service.create_professor_code_test(
+        keywords=keywords,
+        dynamic_topics=topics_string,
+        num_questions=num_questions
+    )
+
+    new_exercise = Exercise(
+        title=llm_test_data.title,
+        keywords=keywords,
+        creator_id=professor_id,
+        created_at=datetime.now(),
+        is_public=True
+    )
+    db.add(new_exercise)
+    db.flush()
+
+    for q_data in llm_test_data.questions:
+        question_content_dict = {
+            "description": q_data.description,
+            "starting_code": q_data.starting_code,
+            "difficulty": q_data.difficulty
+        }
+
+        new_question = Question(
+            exercise_id=new_exercise.id,
+            topic_id=q_data.topic_id,
+            question_type="code",
+            content=json.dumps(question_content_dict, ensure_ascii=False),
+            correct_answer=q_data.reference_solution,
+            points=q_data.points
+        )
+        db.add(new_question)
+
+    db.commit()
+    db.refresh(new_exercise)
+    return new_exercise

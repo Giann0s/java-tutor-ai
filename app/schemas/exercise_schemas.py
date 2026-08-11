@@ -51,6 +51,7 @@ class ExerciseResponse(BaseModel):
     title: str
     keywords: str
     created_at: datetime
+    is_public: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -91,3 +92,40 @@ class LLMCodeGrading(BaseModel):
     is_correct: bool
     score_awarded: float
     llm_feedback: str
+
+
+# Schemas για τα τεστ πολλαπλής που κάνει generate ο καθηγητής
+class ProfessorMCQItem(BaseModel):
+    topic_id: int = Field(description="Το ID του topic που ταιριάζει καλύτερα σε αυτή την ερώτηση")
+    question_text: str
+    option_a: str
+    option_b: str
+    option_c: str
+    option_d: str
+    correct_option: str
+    explanation: str
+
+
+class ProfessorMCQTest(BaseModel):
+    title: str = Field(description="Ένας γενικός τίτλος για όλο το τεστ")
+    questions: List[ProfessorMCQItem]
+
+
+# Schemas για τα τεστ ανάπτυξης κώδικα που κάνει generate ο καθηγητής
+class ProfessorCodeItem(BaseModel):
+    topic_id: int = Field(description="Το ID του topic που ταιριάζει καλύτερα σε αυτό το ζητούμενο")
+    description: str = Field(description="Η εκφώνηση - τι πρέπει να προγραμματίσει ο φοιτητής")
+    starting_code: Optional[str] = Field(description="Βασικός σκελετός κώδικα (προαιρετικό)")
+    reference_solution: str = Field(description="Η πρότυπη λύση σε Java")
+    difficulty: str = Field(description="EASY, MEDIUM, ή HARD")
+    points: int = Field(description="Οι πόντοι για αυτό το ερώτημα (π.χ. 10 ή 20)")
+
+
+class ProfessorCodeTest(BaseModel):
+    title: str = Field(description="Ο τίτλος του συνολικού διαγωνίσματος")
+    questions: List[ProfessorCodeItem]
+
+
+class GenerateProfessorTest(BaseModel):
+    num_questions: int
+    keywords: str

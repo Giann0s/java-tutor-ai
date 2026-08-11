@@ -7,6 +7,7 @@ from app.models.user import StudentMastery, MasteryLog
 # Υπολογίζει mastery με βάση τις επιδόσεις του φοιτητή στις ασκήσεις
 def calculate_mastery_exercise(db: Session, exercise_attempt_id: int):
     exercise = db.query(ExerciseAttempt).options(
+        joinedload(ExerciseAttempt.exercise),
         joinedload(ExerciseAttempt.student_answers).joinedload(StudentAnswer.question)
     ).filter(ExerciseAttempt.id == exercise_attempt_id).first()
 
@@ -29,7 +30,9 @@ def calculate_mastery_exercise(db: Session, exercise_attempt_id: int):
         topic_scores[topic_id]["earned_points"] += answer.score_awarded or 0.0
         topic_scores[topic_id]["total_points"] += answer.question.points or 0.0
 
-    alpha = 0.3  # Smoothing factor
+    is_official_test = exercise.exercise.is_public
+    alpha = 0.6 if is_official_test else 0.3  # Smoothing factor
+
     for topic_id, scores in topic_scores.items():
         earned = scores["earned_points"]
         total = scores["total_points"]
@@ -57,12 +60,13 @@ def calculate_mastery_exercise(db: Session, exercise_attempt_id: int):
             )
             db.add(student_mastery)
 
+        log_source = f"EXERCISE_ATTEMPT_{exercise_attempt_id}_OFFICIAL" if is_official_test else f"EXERCISE_ATTEMPT_{exercise_attempt_id}"
         mastery_log = MasteryLog(
             user_id=exercise.user_id,
             topic_id=topic_id,
             old_mastery=old_mastery,
             new_mastery=new_mastery,
-            source=f"EXERCISE_ATTEMPT_{exercise_attempt_id}"
+            source=log_source
         )
 
         db.add(mastery_log)
