@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ChatRequest(BaseModel):
@@ -18,3 +18,10 @@ class LLMOutput(BaseModel):
     reply: str
     topic_id: Optional[int] = None
     severity: Optional[str] = None
+
+
+class ConversationHistory(BaseModel):
+    id: int
+    title: str
+
+    model_config = ConfigDict(from_attributes=True)

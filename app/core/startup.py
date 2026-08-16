@@ -15,7 +15,6 @@ def create_first_admin(db: Session):
             last_name="",
             hashed_password=hash_password(settings.admin_password),
             role="admin",
-            is_active=True
         )
 
         db.add(first_admin)

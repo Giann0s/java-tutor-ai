@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from starlette import status
 
-from app.api.dependencies import db_dependency, student_dependency, professor_dependency
-from app.schemas.chat_schemas import ConversationResponse, ChatRequest
+from app.api.dependencies import db_dependency, student_dependency, professor_dependency, user_dependency
+from app.schemas.chat_schemas import ConversationResponse, ChatRequest, ConversationHistory
 from app.services import chat_service
 from app.services.student_mastery_service import calculate_mastery_code_feedback
 
@@ -18,7 +18,8 @@ async def llm_chat_student(db: db_dependency,
                            request: ChatRequest,
                            background_tasks: BackgroundTasks):
     try:
-        ai_response = chat_service.process_chat_message(db, student.id, request.conversation_id, request.user_text, False)
+        ai_response = chat_service.process_chat_message(db, student.id, request.conversation_id, request.user_text,
+                                                        False)
     except RuntimeError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -60,7 +61,8 @@ async def llm_chat_professor(db: db_dependency,
                              professor: professor_dependency,
                              request: ChatRequest):
     try:
-        ai_response = chat_service.process_chat_message(db, professor.id, request.conversation_id, request.user_text, True)
+        ai_response = chat_service.process_chat_message(db, professor.id, request.conversation_id, request.user_text,
+                                                        True)
     except RuntimeError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -83,3 +85,18 @@ async def llm_chat_professor(db: db_dependency,
         title=ai_response["title"],
         ai_response=ai_response["ai_response"]
     )
+
+
+@router.get("/", status_code=status.HTTP_200_OK, response_model=list[ConversationHistory])
+async def get_all_conversations(db: db_dependency, user: user_dependency):
+    return chat_service.get_conversations(db, user.id)
+
+
+@router.delete("/{conversation_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_conversation(db: db_dependency, user: user_dependency, conversation_id: int):
+    deleted_conversation = chat_service.delete_conversation(db, user.id, conversation_id)
+    if not deleted_conversation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Δεν βρέθηκε η συγκεκριμένη συζήτηση."
+        )
