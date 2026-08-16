@@ -89,18 +89,17 @@ async def update_password(db: db_dependency, user: user_dependency, password_dat
     return {"message": "Ο κωδικός ενημερώθηκε επιτυχώς."}
 
 
-# Soft delete τον user, δηλαδή αλλαγή του is_active σε False
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
-async def soft_delete_user(db: db_dependency, user: user_dependency):
-    user_service.soft_delete_user(db, user)
+async def delete_user(db: db_dependency, user: user_dependency):
+    user_service.delete_user(db, user)
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def admin_soft_delete_user(db: db_dependency, admin: admin_dependency, user_id: int = Path(gt=0)):
+async def admin_delete_user(db: db_dependency, admin: admin_dependency, user_id: int = Path(gt=0)):
     target_user = user_service.get_user_by_id(db, user_id)
     if target_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Ο χρήστης δεν βρέθηκε."
         )
-    user_service.soft_delete_user(db, target_user)
+    user_service.delete_user(db, target_user)

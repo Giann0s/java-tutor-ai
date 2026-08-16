@@ -54,7 +54,9 @@ def update_user_password(db: Session, user: User, password_data: UpdatePassword)
     return user
 
 
-def soft_delete_user(db: Session, user: User):
-    user.is_active = False
+def delete_user(db: Session, user: User):
+    db.delete(user)
     db.commit()
-    return True
+
+
+

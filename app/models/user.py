@@ -14,7 +14,6 @@ class User(Base):
     last_name = Column(String)
     hashed_password = Column(String)
     role = Column(String)
-    is_active = Column(Boolean)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     masteries = relationship("StudentMastery", back_populates="user", cascade="all, delete-orphan")
