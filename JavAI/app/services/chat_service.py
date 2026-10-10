@@ -102,3 +102,10 @@ def delete_conversation(db: Session, user_id: int, conversation_id: int):
     db.delete(conversation)
     db.commit()
     return True
+
+
+def get_messages_per_conversation(db: Session, conversation_id: int, user_id: int):
+    messages = db.query(Message).join(Conversation).filter(Message.conversation_id == conversation_id,
+                                                           Conversation.user_id == user_id).order_by(Message.created_at.asc()).all()
+
+    return messages

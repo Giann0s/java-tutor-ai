@@ -46,12 +46,6 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: db_depen
             detail="Ανεπιτυχής ταυτοποίηση."
         )
 
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ο λογαριασμός είναι ανενεργός."
-        )
-
     return user
 
 

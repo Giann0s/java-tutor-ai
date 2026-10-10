@@ -10,8 +10,6 @@ def user_login(db: Session, email: str, password: str):
         return None
     if not verify_password(password, user.hashed_password):
         return False
-    if not user.is_active:
-        return False
 
     payload_data = {
         "id": user.id

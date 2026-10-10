@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -25,3 +26,13 @@ class ConversationHistory(BaseModel):
     title: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ConversationMessage(BaseModel):
+    id: int
+    sender_role: str
+    content: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+

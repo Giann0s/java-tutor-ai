@@ -312,7 +312,6 @@ def create_professor_code_test(keywords: str, dynamic_topics: str, num_questions
                 system_instruction=generator_instructions,
                 temperature=0.7,  # 0.7 για να υπάρχει ποικιλία στα σενάρια των ασκήσεων
                 response_mime_type="application/json",
-                # ΠΡΟΣΟΧΗ: Χρησιμοποιούμε το νέο schema εδώ!
                 response_schema=ProfessorCodeTest
             )
         )

@@ -19,8 +19,7 @@ def register_user(db: Session, new_user: CreateUser, role: str):
         first_name=new_user.first_name,
         last_name=new_user.last_name,
         hashed_password=hash_password(new_user.password),
-        role=role,
-        is_active=True
+        role=role
     )
     db.add(new_user_model)
     db.commit()

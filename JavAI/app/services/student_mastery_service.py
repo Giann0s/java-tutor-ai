@@ -75,8 +75,6 @@ def calculate_mastery_exercise(db: Session, exercise_attempt_id: int):
 
 # Υπολογίζει mastery με βάση τους κώδικες που στέλνει ο φοιτητής για feedback
 def calculate_mastery_code_feedback(db: Session, user_id: int, topic_id: int, severity: str, source_id: int):
-    print(
-        f"DEBUG INPUTS -> user_id: {user_id}, topic_id: {topic_id}, severity: {severity} (type: {type(severity)}), source_id: {source_id}")
     severity_to_score = {
         "LOW": 0.7,
         "MEDIUM": 0.4,
