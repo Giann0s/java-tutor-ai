@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from starlette import status
 
 from app.api.dependencies import db_dependency, student_dependency, professor_dependency, user_dependency
-from app.schemas.chat_schemas import ConversationResponse, ChatRequest, ConversationHistory
+from app.schemas.chat_schemas import ConversationResponse, ChatRequest, ConversationHistory, ConversationMessage
 from app.services import chat_service
 from app.services.student_mastery_service import calculate_mastery_code_feedback
 
@@ -100,3 +100,11 @@ async def delete_conversation(db: db_dependency, user: user_dependency, conversa
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Δεν βρέθηκε η συγκεκριμένη συζήτηση."
         )
+
+
+@router.get("/{conversation_id}/messages", status_code=status.HTTP_200_OK, response_model=list[ConversationMessage])
+async def get_conversation_messages(db: db_dependency, user: user_dependency, conversation_id: int):
+    return chat_service.get_messages_per_conversation(db, conversation_id, user.id)
+
+
+
