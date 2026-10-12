@@ -41,6 +41,17 @@ form {
     text-align: center;
 }
 
+.error-message {
+    background-color: rgb(254, 226, 226);
+    color: rgb(220, 38, 38);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 16px;
+    border: 1px solid rgb(252, 165, 165);
+}
+
 .inputs {
     display: flex;
     flex-direction: column;
