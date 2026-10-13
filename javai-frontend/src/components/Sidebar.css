@@ -1,0 +1,129 @@
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 280px;
+    background-color: rgb(23, 23, 23);
+    color: rgb(236, 236, 236);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.app-logo {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+.app-logo span {
+    color: rgb(59, 130, 246);
+}
+
+.new-exercise-btn, .exercise-btn, .new-conversation-btn {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.new-exercise-btn {
+    background-color: rgb(37, 99, 235);
+    color: rgb(255, 255, 255);
+}
+
+.new-exercise-btn:hover {
+    background-color: rgb(59, 130, 246);
+}
+
+.new-conversation-btn {
+    background-color: rgb(47, 47, 47);
+    color: rgb(255, 255, 255);
+}
+
+.new-conversation-btn:hover {
+    background-color: rgb(63, 63, 63);
+}
+
+.exercise-btn {
+    background-color: rgb(47, 47, 47);
+    color: rgb(255, 255, 255);
+}
+
+.exercise-btn:hover {
+    background-color: rgb(63, 63, 63);
+}
+
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.chat-container h3 {
+    font-size: 13px;
+    color: rgb(136, 136, 136);
+    margin-bottom: 12px; 
+}
+
+.chat-container ul {
+    list-style: none;
+}
+
+.chat-container li {
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s ease;
+}
+
+.chat-container li:hover {
+    background-color: rgb(47, 47, 47);
+}
+
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid rgb(51, 51, 51);
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-container span {
+    font-weight: 500;
+    flex: 1;
+}
+
+.logout-btn {
+    background: transparent;
+    border: none;
+    color: rgb(239, 68, 68);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.logout-btn:hover {
+    color: rgb(220, 38, 38);
+}
+
+
+
