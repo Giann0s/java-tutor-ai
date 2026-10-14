@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../../api/axiosConfig';
 import './Register.css';
 
 export function Register() {
@@ -12,7 +12,7 @@ export function Register() {
 
     const navigate = useNavigate();
 
-    async function handleSubmit(e) {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -24,8 +24,7 @@ export function Register() {
         };
 
         try {
-            const response = await axios.post('http://localhost:8000/users/register/student', data);
-            console.log('Success', response.data);
+            await api.post('/users/register/student', data);
             navigate('/login', {
                 state: {successMessage: "Επιτυχής εγγραφή! Μπορείτε πλέον να συνδεθείτε."}
             });
