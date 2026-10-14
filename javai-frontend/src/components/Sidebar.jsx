@@ -1,10 +1,11 @@
 import ProfilePic from '../assets/star_guardian_garen_by_marresart_d9tn6yc-fullview.jpg';
-import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext';
 import './Sidebar.css';
 
 
 export function Sidebar() {
-    const navigate = useNavigate();
+    const { logout } = useContext(AuthContext);
 
     return (
         <aside className="sidebar">
@@ -27,7 +28,7 @@ export function Sidebar() {
             <div className="profile-container">
                 <img className="profile-pic" src={ProfilePic} />
                 <span>Φοιτητής</span>
-                <button onClick={() => navigate('/login')} className="logout-btn">
+                <button onClick={logout} className="logout-btn">
                     Αποσύνδεση
                 </button>
 

@@ -1,7 +1,8 @@
 import './Login.css';
-import axios from 'axios';
-import { useState, useEffect } from 'react';
+import api from '../../api/axiosConfig';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import AuthContext from '../../context/AuthContext';
 
 export function Login() {
     const [email, setEmail] = useState("");
@@ -9,6 +10,7 @@ export function Login() {
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
     const location = useLocation();
 
     const [successMessage, setSuccessMessage] = useState(location.state?.successMessage || ""); //for handling the success message from the register page
@@ -19,7 +21,7 @@ export function Login() {
         }
     }, [location, navigate]); //for deleting the state so that the success message disappears after reloading
 
-    async function handleSubmit(e) {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccessMessage('');
@@ -29,12 +31,10 @@ export function Login() {
         formData.append('password', password);
 
         try {
-            const response = await axios.post('http://localhost:8000/auth/login', formData);
+            const response = await api.post('/auth/login', formData);
 
-            localStorage.setItem('access_token', response.data.access_token);
-
-            console.log("Success", response.data);
-            //redirection to home page to be added
+            login(response.data.access_token);
+            navigate('/home-student');
         } catch (error) {
             if (error.response) {
                 setError("Λάθος email ή κωδικός. Δοκιμάστε ξανά.");

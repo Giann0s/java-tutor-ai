@@ -1,8 +1,19 @@
 import './StudentHome.css';
 import { Sidebar } from '../../components/Sidebar.jsx';
 import { ChatMessage } from '../../components/ChatMessage.jsx';
+import { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/AuthContext.jsx';
 
 export function StudentHome() {
+    const { token } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!token) {
+            navigate('/login');
+        }
+    }, [token, navigate]);
 
     return (
         <div className="home-layout">
