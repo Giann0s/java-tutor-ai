@@ -75,20 +75,55 @@
     list-style: none;
 }
 
-.chat-container li {
-    padding: 6px 10px;
+.conv-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
     border-radius: 6px;
     margin-bottom: 5px;
     cursor: pointer;
     font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.conv-item:hover,
+.conv-item.active {
+    background-color: rgb(47, 47, 47);
+}
+
+.chat-container li:hover .delete-conv-btn {
+    opacity: 1;
+}
+
+.conv-title {
+    flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: background-color 0.2s ease;
+    margin-right: 8px;
+}
+
+.delete-conv-btn {
+    background: transparent;
+    border: none;
+    color: rgb(136, 136, 136);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.delete-conv-btn:hover {
+    color: rgb(239, 68, 68);
+    background-color: rgba(239, 68, 68, 0.1);
 }
 
 .chat-container li:hover {
     background-color: rgb(47, 47, 47);
+    
 }
 
 .profile-container {

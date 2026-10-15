@@ -1,8 +1,8 @@
 import './ChatMessage.css';
 
-export function ChatMessage({ sender, content, time }) {
+export function ChatMessage({ sender_role, content, time }) {
 
-    const isModel = sender === 'model';
+    const isModel = sender_role === 'model';
 
     return (
         <div className={`message-row ${isModel ? "model-row" : "user-row"}`}>
