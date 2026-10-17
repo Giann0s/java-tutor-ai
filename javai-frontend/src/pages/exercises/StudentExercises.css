@@ -1,0 +1,99 @@
+.main-exercise-area {
+    flex: 1;
+    height: 100vh;
+    background-color: rgb(33, 33, 33);
+    color: rgb(236, 236, 236);
+    overflow-y: auto;
+    padding: 32px;
+    box-sizing: border-box;
+}
+
+.empty-exercise-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    color: rgb(156, 163, 175);
+}
+
+.submit-exercise-btn {
+    background-color: rgb(37, 99, 235);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-exercise-btn:hover:not(:disabled) {
+    background-color: rgb(59, 130, 246);
+}
+
+.submit-exercise-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.exercise-container {
+    max-width: 850px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid rgb(55, 55, 55);
+    padding-bottom: 16px;
+}
+
+.exercise-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+}
+
+.topic-badge {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: rgb(96, 165, 250);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.solved-badge {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: rgb(74, 222, 128);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.score-banner {
+    background-color: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgb(59, 130, 246);
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.submit-section {
+    display: flex;
+    justify-content: flex-end;
+}

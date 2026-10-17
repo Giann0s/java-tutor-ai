@@ -20,7 +20,7 @@
     color: rgb(59, 130, 246);
 }
 
-.new-exercise-btn, .exercise-btn, .new-conversation-btn {
+.new-item-btn, .switch-btn {
     width: 100%;
     padding: 12px;
     margin-bottom: 12px;
@@ -32,30 +32,21 @@
     transition: background-color 0.2s ease;
 }
 
-.new-exercise-btn {
+.new-item-btn {
     background-color: rgb(37, 99, 235);
     color: rgb(255, 255, 255);
 }
 
-.new-exercise-btn:hover {
+.new-item-btn:hover {
     background-color: rgb(59, 130, 246);
 }
 
-.new-conversation-btn {
+.switch-btn {
     background-color: rgb(47, 47, 47);
     color: rgb(255, 255, 255);
 }
 
-.new-conversation-btn:hover {
-    background-color: rgb(63, 63, 63);
-}
-
-.exercise-btn {
-    background-color: rgb(47, 47, 47);
-    color: rgb(255, 255, 255);
-}
-
-.exercise-btn:hover {
+.switch-btn:hover {
     background-color: rgb(63, 63, 63);
 }
 
@@ -75,7 +66,7 @@
     list-style: none;
 }
 
-.conv-item {
+.item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -87,8 +78,8 @@
     transition: background-color 0.2s ease;
 }
 
-.conv-item:hover,
-.conv-item.active {
+.item:hover,
+.item.active {
     background-color: rgb(47, 47, 47);
 }
 
@@ -96,7 +87,7 @@
     opacity: 1;
 }
 
-.conv-title {
+.item-title {
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
@@ -104,7 +95,7 @@
     margin-right: 8px;
 }
 
-.delete-conv-btn {
+.delete-item-btn {
     background: transparent;
     border: none;
     color: rgb(136, 136, 136);
@@ -116,7 +107,7 @@
     transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-.delete-conv-btn:hover {
+.delete-item-btn:hover {
     color: rgb(239, 68, 68);
     background-color: rgba(239, 68, 68, 0.1);
 }

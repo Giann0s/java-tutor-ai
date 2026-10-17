@@ -125,11 +125,12 @@ export function StudentHome() {
     return (
         <div className="home-layout">
             <Sidebar
-                conversations={conversations}
-                currentConvId={currentConvId}
-                setCurrentConvId={setCurrentConvId}
-                handleNewChat={handleNewChat}
-                handleDeleteConversation={handleDeleteConversation}
+                mode="chat"
+                items={conversations}
+                currentId={currentConvId}
+                setCurrentId={setCurrentConvId}
+                handleNewAction={handleNewChat}
+                handleDeleteItem={handleDeleteConversation}
             />
 
             <main className="main-chat-area">

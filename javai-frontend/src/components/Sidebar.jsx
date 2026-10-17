@@ -1,11 +1,22 @@
 import ProfilePic from '../assets/star_guardian_garen_by_marresart_d9tn6yc-fullview.jpg';
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import './Sidebar.css';
 
 
-export function Sidebar({ conversations, currentConvId, setCurrentConvId, handleNewChat, handleDeleteConversation }) {
+export function Sidebar({
+    mode = "chat",
+    items = [], //Stores conversations or exercises
+    currentId,
+    setCurrentId,
+    handleNewAction,
+    handleDeleteItem
+}) {
     const { logout } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const isChat = mode === "chat";
 
     return (
         <aside className="sidebar">
@@ -13,35 +24,47 @@ export function Sidebar({ conversations, currentConvId, setCurrentConvId, handle
                 Jav<span>AI</span>
             </div>
 
-            <button className="exercise-btn">Ιστορικό Ασκήσεων</button>
-            <button className="new-exercise-btn">Νέα Άσκηση</button>
+            {/* Button for switching between exercise page and chat page */}
             <button
-                className="new-conversation-btn"
-                onClick={handleNewChat}
+                className="switch-btn"
+                onClick={() => navigate(isChat ? '/exercises' : '/home')}
             >
-                Νέα συζήτηση
+                {isChat ? 'Ασκήσεις' : 'Συνομιλία'}
+            </button>
+
+            {/* Button for creating new conversation/exercise */}
+            <button
+                className="new-item-btn"
+                onClick={handleNewAction}
+            >
+                {isChat ? 'Νέα Συζήτηση' : 'Νέα Άσκηση'}
             </button>
 
             <div className="chat-container">
-                <h3>Ιστορικό συζητήσεων</h3>
+                <h3>{isChat ? "Ιστορικό συζητήσεων" : "Ιστορικό ασκήσεων"}</h3>
                 <ul>
-                    {conversations.map((conv) => (
+                    {items.map((item) => (
                         <li
-                            key={conv.id}
-                            className={`conv-item ${currentConvId === conv.id ? 'active' : ''}`}
-                            onClick={() => setCurrentConvId(conv.id)}
+                            key={item.id}
+                            className={`item ${currentId === item.id ? 'active' : ''}`}
+                            onClick={() => setCurrentId(item.id)}
                         >
-                            <span className="conv-title">{conv.title}</span>
+                            <span className="item-title">
+                                {!isChat && item.is_public ? `🎓 ${item.title}` : item.title}
+                            </span>
 
-                            <button
-                                className="delete-conv-btn"
-                                onClick={(e) => {
-                                    e.stopPropagation(); //Prevents from clicking the <li> element as well
-                                    handleDeleteConversation(conv.id);
-                                }}
-                            >
-                                &#10005;
-                            </button>
+                            {isChat && handleDeleteItem && (
+                                <button
+                                    className="delete-item-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteItem(item.id);
+                                    }}
+                                >
+                                    &#10005;
+                                </button>
+                            )}
+
                         </li>
                     ))}
 
