@@ -27,7 +27,7 @@ export function Sidebar({
             {/* Button for switching between exercise page and chat page */}
             <button
                 className="switch-btn"
-                onClick={() => navigate(isChat ? '/exercises' : '/home')}
+                onClick={() => navigate(isChat ? '/exercises' : '/home-student')}
             >
                 {isChat ? 'Ασκήσεις' : 'Συνομιλία'}
             </button>

@@ -39,3 +39,49 @@
     align-self: flex-end; 
     opacity: 0.7;
 }
+
+.markdown-body p {
+    margin: 0 0 10px 0;
+}
+
+.markdown-body p:last-child {
+    margin-bottom: 0;
+}
+
+.markdown-body ul, .markdown-body ol {
+    margin: 6px 0 10px 0;
+    padding-left: 22px;
+}
+
+.markdown-body li {
+    margin-bottom: 4px;
+}
+
+.markdown-body code {
+    background-color: rgba(0, 0, 0, 0.35);
+    color: rgb(147, 197, 253);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13.5px;
+}
+
+.markdown-body pre {
+    background-color: rgb(18, 18, 18);
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 10px 0;
+    border: 1px solid rgb(55, 55, 55);
+}
+
+.markdown-body pre code {
+    background-color: transparent;
+    color: rgb(229, 231, 235);
+    padding: 0;
+}
+
+.user-text {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}

@@ -126,3 +126,35 @@
     font-family: 'Consolas', 'Courier New', monospace;
     margin-top: 8px;
 }
+
+.question-prompt {
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.markdown-body p {
+    margin: 0 0 12px 0;
+}
+
+.markdown-body p:last-child {
+    margin-bottom: 0;
+}
+
+.markdown-body ul, .markdown-body ol {
+    margin: 8px 0 12px 0;
+    padding-left: 24px;
+}
+
+.markdown-body li {
+    margin-bottom: 6px;
+}
+
+
+.markdown-body code {
+    background-color: rgb(45, 45, 45);
+    color: rgb(147, 197, 253);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13.5px;
+}

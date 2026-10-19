@@ -6,6 +6,7 @@ import AuthContext from '../../context/AuthContext';
 import { Sidebar } from '../../components/Sidebar';
 import { NewExerciseModal } from '../../components/NewExerciseModal';
 import { QuestionCard } from '../../components/QuestionCard';
+import { formatJavaCode } from '../../utils/formatters';
 
 export function StudentExercises() {
     const { token } = useContext(AuthContext);
@@ -60,7 +61,7 @@ export function StudentExercises() {
             if (!data.has_solved) {
                 const initialAnswers = {};
                 data.questions.forEach((q) => {
-                    initialAnswers[q.id] = q.content.starting_code || "";
+                    initialAnswers[q.id] = formatJavaCode(q.content.starting_code) || "";
                 })
                 setUserAnswers(initialAnswers);
             }

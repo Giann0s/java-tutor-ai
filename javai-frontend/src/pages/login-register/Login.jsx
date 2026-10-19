@@ -33,7 +33,7 @@ export function Login() {
         try {
             const response = await api.post('/auth/login', formData);
 
-            login(response.data.access_token);
+            login(response.data.access_token, response.data.refresh_token);
             navigate('/home-student');
         } catch (error) {
             if (error.response) {

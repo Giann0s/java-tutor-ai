@@ -1,7 +1,9 @@
 import './QuestionCard.css';
+import ReactMarkdown from 'react-markdown';
+import { formatPromptText, formatJavaCode } from '../utils/formatters';
 
 export function QuestionCard({
-    question, 
+    question,
     index,
     userAnswer,
     onAnswerChange,
@@ -11,6 +13,7 @@ export function QuestionCard({
 }) {
 
     const isMcq = question.question_type === 'mcq';
+    const rawPrompt = isMcq ? question.content.text : question.content.description;
 
     return (
         <div className="question-card">
@@ -24,10 +27,12 @@ export function QuestionCard({
                 </div>
             </div>
 
-            <div className="question-prompt">
-                {isMcq ? question.content.text : question.content.description}
+            <div className="question-prompt markdown-body">
+                <ReactMarkdown>
+                    {formatPromptText(rawPrompt)}
+                </ReactMarkdown>
             </div>
-            
+
             {/* Answer area for each type of exercise */}
             {isMcq ? (
                 <div className="mcq-choices">
@@ -45,6 +50,7 @@ export function QuestionCard({
                                 key={choice.id}
                                 type="button"
                                 className={`choice-btn ${isSelected ? 'selected' : ''} ${statusClass}`}
+                                onClick={() => onAnswerChange(question.id, choice.id)}
                                 disabled={hasSolved || isSubmitting}
                             >
                                 {choice.text}
@@ -67,8 +73,9 @@ export function QuestionCard({
             {questionResult && (
                 <div className={`feedback-box ${questionResult.is_correct ? 'feedback-success' : 'feedback-error'}`}>
                     <strong>Αξιολόγηση ({questionResult.score_awarded}/{question.points} πόντοι)</strong>
-                    <p>{questionResult.llm_feedback}</p>
-
+                    <div className="markdown-body">
+                        <ReactMarkdown>{questionResult.llm_feedback}</ReactMarkdown>
+                    </div>
                 </div>
             )}
 
@@ -78,13 +85,15 @@ export function QuestionCard({
                     {isMcq && question.content.explanation && (
                         <>
                             <strong>Εξήγηση:</strong>
-                            <p>{question.content.explanation}</p>
+                            <div className="markdown-body">
+                                <ReactMarkdown>{question.content.explanation}</ReactMarkdown>
+                            </div>
                         </>
                     )}
                     {!isMcq && question.correct_answer && (
                         <>
                             <strong>Ενδεικτική Λύση:</strong>
-                            <pre className="reference-code">{question.correct_answer}</pre>
+                            <pre className="reference-code">{formatJavaCode(question.correct_answer)}</pre>
                         </>
                     )}
                 </div>
