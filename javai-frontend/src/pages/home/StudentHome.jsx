@@ -30,11 +30,13 @@ export function StudentHome() {
                 const response = await api.get('/chat/');
                 setConversations(response.data);
             } catch (error) {
-                console.error("Σφάλμα στην φόρτωηση συζητήσεων: ", error);
+                console.error("Σφάλμα στην φόρτωση συζητήσεων: ", error);
             }
         };
+
         if (token) {
             fetchConversations();
+           
         }
     }, [token]);
 
