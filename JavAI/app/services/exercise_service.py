@@ -150,7 +150,7 @@ def generate_mcq_exercise(db: Session, user_id: int, topic_id: Optional[int] = N
 def get_exercises(db: Session, user_id: int):
     exercises = db.query(Exercise).filter(
         (Exercise.creator_id == user_id) | (Exercise.is_public == True)
-    ).all()
+    ).order_by(Exercise.created_at.desc()).all()
     if not exercises:
         return None
     return exercises

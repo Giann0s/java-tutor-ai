@@ -2,7 +2,13 @@
     display: flex;
     width: 100%;
     max-width: 850px;
-    margin: 0 auto 24px auto;
+    margin: 0 auto;
+}
+
+.loading-spinner {
+    height: 36px;
+    width: 36px;
+    object-fit: contain;
 }
 
 .user-row {
@@ -70,9 +76,10 @@
     background-color: rgb(18, 18, 18);
     padding: 12px;
     border-radius: 8px;
-    overflow-x: auto;
     margin: 10px 0;
     border: 1px solid rgb(55, 55, 55);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
 
 .markdown-body pre code {

@@ -1,4 +1,4 @@
-import './Login.css';
+import './LoginRegister.css';
 import api from '../../api/axiosConfig';
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -56,7 +56,7 @@ export function Login() {
                 <div className='app-logo'>
                     Jav<span>AI</span>
                 </div>
-                <form onSubmit={handleSubmit}>
+                <form className="action-form" onSubmit={handleSubmit}>
                     <h2 className='title'>Σύνδεση</h2>
                     {error && <div className="error-message">{error}</div>}
                     {successMessage && <div className="success-message">{successMessage}</div>}
@@ -78,11 +78,11 @@ export function Login() {
                             required
                         />
                     </div>
-                    <button type="submit" className="login-btn">Είσοδος</button>
+                    <button type="submit" className="submit-btn">Είσοδος</button>
                 </form>
 
-                <div className="signup-prompt">
-                    Δεν έχετε λογαριασμό; <button type="button" className="signup-link" onClick={() => { navigate('/register') }}>Κάντε εγγραφή τώρα</button>
+                <div className="action-prompt">
+                    Δεν έχετε λογαριασμό; <button type="button" className="action-link" onClick={() => { navigate('/register') }}>Κάντε εγγραφή τώρα</button>
                 </div>
             </div>
         </>

@@ -3,8 +3,8 @@ export const formatPromptText = (text) => {
     if (!text) return "";
     return text
         .replace(/(\d+\.\s\*\*)/g, '\n\n$1') 
-        .replace(/\s+-\s+/g, '\n- ');        
-};
+        .replace(/([^\n])\s*```java\s*/g, '$1\n\n```java\n');
+};        
 
 // Μορφοποίηση κώδικα Java αν το AI τον έστειλε σε μία γραμμή
 export const formatJavaCode = (code) => {

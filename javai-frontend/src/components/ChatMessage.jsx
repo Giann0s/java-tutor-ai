@@ -1,9 +1,18 @@
 import './ChatMessage.css';
 import ReactMarkdown from 'react-markdown';
+import LoadingSpinner from '../assets/loading-spinner2.gif';
 
-export function ChatMessage({ sender_role, content, time }) {
+export function ChatMessage({ sender_role, content, time, isLoading = false }) {
 
     const isModel = sender_role === 'model';
+
+    if (isLoading) {
+        return (
+            <div className="message-row model-row">
+                <img className="loading-spinner" alt="Φόρτωση..." src={LoadingSpinner} />
+            </div>
+        );
+    }
 
     return (
         <div className={`message-row ${isModel ? "model-row" : "user-row"}`}>

@@ -4,51 +4,65 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: rgb(238, 242, 246);
+    background-color: rgb(18, 18, 18);
     padding: 20px;
 }
 
 .app-logo {
     font-size: 48px;
     font-weight: 800;
-    color: rgb(17, 24, 39);
+    color: rgb(255, 255, 255);
     margin-bottom: 30px;
     letter-spacing: -1.5px;
 }
 
 .app-logo span {
-    color: rgb(59, 130, 246); 
+    color: rgb(96, 165, 250); 
 }
 
-form {
+.action-form {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 400px;
-    background: rgb(255, 255, 255);
+    max-width: 400px; 
+    background: rgb(30, 30, 30);
+    border: 1px solid rgb(55, 55, 55);
     padding: 40px;
     border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
 }
+
 
 .title {
     font-size: 24px;
     font-weight: 600;
-    color: rgb(17, 24, 39);
+    color: rgb(243, 244, 246);
     margin: 0;
     margin-bottom: 32px;
     text-align: center;
 }
 
 .error-message {
-    background-color: rgb(254, 226, 226);
-    color: rgb(220, 38, 38);
+    background-color: rgba(239, 68, 68, 0.15);
+    color: rgb(252, 165, 165);
     padding: 12px;
     border-radius: 8px;
     font-size: 14px;
     text-align: center;
     margin-bottom: 16px;
-    border: 1px solid rgb(252, 165, 165);
+    border: 1px solid rgb(239, 68, 68, 0.5);
+}
+
+.success-message {
+    background-color: rgb(16, 185, 129, 0.15);
+    color: rgb(110, 231, 183);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 16px;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+
 }
 
 .inputs {
@@ -60,22 +74,28 @@ form {
 
 .text-input {
     width: 100%;
-    background: rgb(243, 244, 246);
+    background: rgb(20, 20, 20);
     border-radius: 8px;
     padding: 14px 16px;
-    border: 2px solid transparent;
+    border: 1px solid rgb(65, 65, 65);
     font-size: 15px;
-    color: rgb(31, 41, 55);
+    color: rgb(255, 255, 255);
     outline: none;
-    transition: border-color 0.2s ease, background-color 0.2s ease
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.text-input::placeholder {
+    color: rgb(130, 130, 130);
 }
 
 .text-input:focus {
-    border-color: rgb(69, 130, 246);
-    background: rgb(255, 255, 255);
+    border-color: rgb(59, 130, 246);
+    background: rgb(25, 25, 25);
 }
 
-.register-btn {
+
+.submit-btn {
     width: 100%;
     padding: 14px;
     border: none;
@@ -83,36 +103,38 @@ form {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    background-color: rgb(17, 24, 39);
+    background-color: rgb(37, 99, 235); 
     color: rgb(255, 255, 255);
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.register-btn:hover {
-    background-color: rgb(55, 65, 81);
+.submit-btn:hover {
+    background-color: rgb(31, 85, 173);
 }
 
-.register-btn:active {
+.submit-btn:active {
     transform: scale(0.98);
 }
 
-.login-prompt {
+.action-prompt {
     margin-top: 24px;
     font-size: 14px;
-    color: rgb(75, 85, 99);
+    color: rgb(160, 160, 160);
 }
 
-.login-link {
+.action-link {
     background: none;
     border: none;
     padding: 0;
     font-size: 14px;
     font-weight: 600;
-    color: rgb(59, 130, 246);
+    color: rgb(96, 165, 250); 
+    cursor: pointer;
     margin-left: 4px;
 }
 
-.login-link:hover {
+.action-link:hover {
     text-decoration: underline;
+    color: rgb(147, 197, 253);
     cursor: pointer;
 }

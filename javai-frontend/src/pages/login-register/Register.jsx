@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from '../../api/axiosConfig';
-import './Register.css';
+import './LoginRegister.css';
 
 export function Register() {
     const [name, setName] = useState("");
@@ -52,7 +52,7 @@ export function Register() {
                     Jav<span>AI</span>
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                <form className="action-form" onSubmit={handleSubmit}>
                     <h2 className="title">Εγγραφή</h2>
                     {error && <div className="error-message">{error}</div>}
 
@@ -93,11 +93,11 @@ export function Register() {
                             required
                         />
                     </div>
-                    <button type="submit" className="register-btn">Εγγραφή</button>
+                    <button type="submit" className="submit-btn">Εγγραφή</button>
                 </form>
 
-                <div className="login-prompt">
-                    Έχετε ήδη λογαριασμό; <button type="button" className="login-link" onClick={() => { navigate('/login') }}>Συνδεθείτε εδώ</button>
+                <div className="action-prompt">
+                    Έχετε ήδη λογαριασμό; <button type="button" className="action-link" onClick={() => { navigate('/login') }}>Συνδεθείτε εδώ</button>
                 </div>
 
             </div>

@@ -1,7 +1,7 @@
 import './StudentHome.css';
 import { Sidebar } from '../../components/Sidebar.jsx';
 import { ChatMessage } from '../../components/ChatMessage.jsx';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axiosConfig';
 import AuthContext from '../../context/AuthContext.jsx';
@@ -10,6 +10,7 @@ import { formatTime } from '../../utils/formatTime.js';
 export function StudentHome() {
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
+    const chatContainerRef = useRef(null);
 
     const [conversations, setConversations] = useState([]);
     const [currentConvId, setCurrentConvId] = useState(null);
@@ -36,7 +37,7 @@ export function StudentHome() {
 
         if (token) {
             fetchConversations();
-           
+
         }
     }, [token]);
 
@@ -55,6 +56,13 @@ export function StudentHome() {
             fetchMessages(currentConvId);
         }
     }, [currentConvId]);
+
+    useEffect(() => {
+        const containerElem = chatContainerRef.current;
+        if (containerElem) {
+            containerElem.scrollTop = containerElem.scrollHeight;
+        }
+    }, [messages, isSending]);
 
     const handleNewChat = () => {
         setCurrentConvId(null);
@@ -136,7 +144,7 @@ export function StudentHome() {
             />
 
             <main className="main-chat-area">
-                <div className="chat-messages">
+                <div className="chat-messages" ref={chatContainerRef}>
                     {messages.map((msg) => (
                         <ChatMessage
                             key={msg.id}
@@ -146,15 +154,21 @@ export function StudentHome() {
                         />
                     ))}
 
+                    {isSending && <ChatMessage sender_role="model" isLoading={true} />}
                 </div>
 
                 <div className="input-wrapper">
-                    <input
+                    <textarea
                         className="chat-input"
                         placeholder="Γράψτε ένα μήνυμα..."
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault(); 
+                                handleSendMessage();
+                            }
+                        }}
                         disabled={isSending}
                     />
                     <button
