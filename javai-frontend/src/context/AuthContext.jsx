@@ -5,13 +5,17 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
     const [token, setToken] = useState(() => localStorage.getItem('access_token'));
 
-    const login = (newToken) => {
-        localStorage.setItem('access_token', newToken);
-        setToken(newToken);
+    const login = (newAccessToken, newRefreshToken) => {
+        localStorage.setItem('access_token', newAccessToken);
+        if (newRefreshToken) {
+            localStorage.setItem('refresh_token', newRefreshToken);
+        }
+        setToken(newAccessToken);
     };
 
     const logout = () => {
         localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         setToken(null);
     };
 

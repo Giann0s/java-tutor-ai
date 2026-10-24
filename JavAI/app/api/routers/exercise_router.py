@@ -54,11 +54,7 @@ async def generate_exercise_mcq(db: db_dependency, student: student_dependency, 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[ExerciseResponse])
 async def get_all_exercises(db: db_dependency, user: user_dependency):
     exercises = get_exercises(db, user.id)
-    if exercises is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Δεν βρέθηκαν ασκήσεις."
-        )
+
     return exercises
 
 
