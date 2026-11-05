@@ -1,16 +1,3 @@
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
 .modal-content {
     background-color: rgb(30, 30, 30);
     color: rgb(236, 236, 236);
@@ -55,7 +42,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    background-color: rgb(19, 19, 19);
 }
 
 .form-group {
@@ -170,4 +156,8 @@
 .cancel-btn:disabled, .generate-btn:disabled, .type-card:disabled, .topic-select:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+input[type="number"].topic-select {
+    color-scheme: dark;
 }

@@ -9,7 +9,8 @@ export function QuestionCard({
     onAnswerChange,
     hasSolved,
     isSubmitting,
-    questionResult
+    questionResult,
+    isProfessorView = false
 }) {
 
     const isMcq = question.question_type === 'mcq';
@@ -59,15 +60,26 @@ export function QuestionCard({
                     })}
                 </div>
             ) : (
-                <textarea
-                    className="code-textarea"
-                    value={userAnswer}
-                    onChange={(e) => onAnswerChange(question.id, e.target.value)}
-                    placeholder="// Γράψτε τον κώδικα Java έδω..."
-                    disabled={hasSolved || isSubmitting}
-                    rows={12}
-                    spellCheck="false"
-                />
+                !isProfessorView ? (
+                    <textarea
+                        className="code-textarea"
+                        value={userAnswer}
+                        onChange={(e) => onAnswerChange(question.id, e.target.value)}
+                        placeholder="// Γράψτε τον κώδικα Java έδω..."
+                        disabled={hasSolved || isSubmitting}
+                        rows={12}
+                        spellCheck="false"
+                    />
+                ) : (
+            question.content.starting_code && (
+            <div className="solution-box">
+                <strong>Αρχικός Κώδικας</strong>
+                <pre className="reference-code">{formatJavaCode(question.content.starting_code)}</pre>
+            </div>
+            )
+
+            )
+                
             )}
 
             {questionResult && (

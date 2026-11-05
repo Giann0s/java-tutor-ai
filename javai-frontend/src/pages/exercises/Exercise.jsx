@@ -1,4 +1,4 @@
-import './StudentExercises.css';
+import './Exercise.css';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axiosConfig';
@@ -7,15 +7,17 @@ import { Sidebar } from '../../components/Sidebar';
 import { NewExerciseModal } from '../../components/NewExerciseModal';
 import { QuestionCard } from '../../components/QuestionCard';
 import { formatJavaCode } from '../../utils/formatters';
+import { TopicsModal } from '../../components/TopicsModal';
 
-export function StudentExercises() {
-    const { token } = useContext(AuthContext);
+export function Exercise() {
+    const { token, isProfessor } = useContext(AuthContext);
     const navigate = useNavigate();
 
     // States for the modal and sidebar
     const [exercises, setExercises] = useState([]);
     const [topics, setTopics] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
 
     // States for the currect exercise
@@ -37,12 +39,17 @@ export function StudentExercises() {
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                const exerciseRes = await api.get('/exercise/');
                 const topicRes = await api.get('/topics/');
-                setExercises(exerciseRes.data);
                 setTopics(topicRes.data);
             } catch (error) {
-                console.error("Σφάλμα κατά την αρχική φόρτωση: ", error);
+                console.error("Σφάλμα στη φόρτωση των topics: ", error);
+            }
+
+            try {
+                const exerciseRes = await api.get('/exercise/');
+                setExercises(exerciseRes.data);
+            } catch (error) {
+                console.error("Σφάλμα στη φόρτωση των ασκήσεων: ", error);
             }
         };
 
@@ -54,11 +61,13 @@ export function StudentExercises() {
     // Fetch details of a specific exercise
     const fetchExerciseDetails = async (exercise_id) => {
         try {
-            const response = await api.get(`/exercise/${exercise_id}`);
+            const endpoint = isProfessor ? `/exercise/professor/${exercise_id}` : `/exercise/${exercise_id}`;
+
+            const response = await api.get(endpoint);
             const data = response.data;
             setCurrentExercise(data);
 
-            if (!data.has_solved) {
+            if (!isProfessor && !data.has_solved) {
                 const initialAnswers = {};
                 data.questions.forEach((q) => {
                     initialAnswers[q.id] = formatJavaCode(q.content.starting_code) || "";
@@ -66,7 +75,7 @@ export function StudentExercises() {
                 setUserAnswers(initialAnswers);
             }
         } catch (error) {
-            console.error("Σφάλμα στην φόρτωση της άσκησης: ", error); 
+            console.error("Σφάλμα στην φόρτωση της άσκησης: ", error);
         }
     };
 
@@ -82,13 +91,18 @@ export function StudentExercises() {
     }, [currentExerciseId]);
 
     // New exercise
-    const handleGenerateExercise = async (type, topicId) => {
+    const handleGenerateExercise = async (type, data) => {
         setIsGenerating(true);
         try {
-            const endpoint = type === 'code' ? '/exercise/code' : '/exercise/mcq';
-            const config = topicId ? { params: { topic_id: topicId } } : {};
-
-            const response = await api.post(endpoint, null, config);
+            let response;
+            if (isProfessor) {
+                const endpoint = type === 'code' ? '/exercise/code/test' : '/exercise/test';
+                response = await api.post(endpoint, data);
+            } else {
+                const endpoint = type === 'code' ? '/exercise/code' : '/exercise/mcq';
+                const config = data ? { params: { topic_id: data } } : {}
+                response = await api.post(endpoint, null, config);
+            }
 
             const updatedList = await api.get('/exercise/');
             setExercises(updatedList.data);
@@ -106,14 +120,13 @@ export function StudentExercises() {
     const handleAnswerChange = (questionId, value) => {
         setUserAnswers((prev) => ({
             ...prev,
-            [questionId]: String(value) 
+            [questionId]: String(value)
         }));
     };
 
     // Submit exercise
     const handleSubmitExercise = async () => {
         if (!currentExercise || isSubmitting) return;
-        setIsSubmitting(true);
 
         const unanswered = currentExercise.questions.some(
             (q) => !userAnswers[q.id] || userAnswers[q.id].trim() === ""
@@ -123,6 +136,7 @@ export function StudentExercises() {
             return;
         }
 
+         setIsSubmitting(true);
         try {
             const payload = {
                 answers: currentExercise.questions.map((q) => ({
@@ -154,6 +168,7 @@ export function StudentExercises() {
                 currentId={currentExerciseId}
                 setCurrentId={setCurrentExerciseId}
                 handleNewAction={() => setIsModalOpen(true)}
+                handleNewTopic={() => setIsTopicModalOpen(true)}
             />
 
             <main className="main-exercise-area">
@@ -170,7 +185,7 @@ export function StudentExercises() {
                                     <span className="topic-badge">#{currentExercise.keywords}</span>
                                 )}
                             </div>
-                            {currentExercise.has_solved && (
+                            {!isProfessor && currentExercise.has_solved && (
                                 <span className="solved-badge">Ολοκληρωμένη</span>
                             )}
                         </div>
@@ -192,15 +207,16 @@ export function StudentExercises() {
                                         index={index}
                                         userAnswer={userAnswers[q.id] || ""}
                                         onAnswerChange={handleAnswerChange}
-                                        hasSolved={currentExercise.has_solved}
+                                        hasSolved={isProfessor || currentExercise.has_solved}
                                         isSubmitting={isSubmitting}
                                         questionResult={qResult}
+                                        isProfessor={isProfessor}
                                     />
                                 );
                             })}
                         </div>
 
-                        {!currentExercise.has_solved && (
+                        {!isProfessor && !currentExercise.has_solved && (
                             <div className="submit-section">
                                 <button
                                     className="submit-exercise-btn"
@@ -221,7 +237,17 @@ export function StudentExercises() {
                 topics={topics}
                 onGenerate={handleGenerateExercise}
                 isGenerating={isGenerating}
+                isProfessor={isProfessor}
             />
+
+            {isProfessor && (
+                <TopicsModal
+                    isOpen={isTopicModalOpen}
+                    onClose={() => setIsTopicModalOpen(false)}
+                    topics={topics}
+                    setTopics={setTopics}
+                />
+            )}
         </div>
     );
 }

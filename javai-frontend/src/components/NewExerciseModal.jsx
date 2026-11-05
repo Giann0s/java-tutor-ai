@@ -1,9 +1,11 @@
 import './NewExerciseModal.css';
 import { useState } from 'react';
 
-export function NewExerciseModal({ isOpen, onClose, topics, onGenerate, isGenerating }) {
+export function NewExerciseModal({ isOpen, onClose, topics, onGenerate, isGenerating, isProfessor = false }) {
     const [exerciseType, setExerciseType] = useState('mcq');
     const [selectedTopicId, setSelectedTopicId] = useState('');
+    const [keywords, setKeywords] = useState(''); //for the professor
+    const [numQuestions, setNumQuestions] = useState(5);
 
     if (!isOpen) return null;
 
@@ -12,19 +14,30 @@ export function NewExerciseModal({ isOpen, onClose, topics, onGenerate, isGenera
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const topicToSend = selectedTopic ? Number(selectedTopicId) : null;
-        onGenerate(exerciseType, topicToSend);
+        if (isProfessor) {
+            if (!keywords.trim()) {
+                alert("Παρακαλώ εισάγετε λέξεις-κλειδιά για το τεστ.");
+                return;
+            }
+            onGenerate(exerciseType, {
+                keywords: keywords.trim(),
+                num_questions: Number(numQuestions)
+            });
+        } else {
+            const topicToSend = selectedTopic ? Number(selectedTopicId) : null;
+            onGenerate(exerciseType, topicToSend);
+        }
     };
 
     return (
         <div className="modal-overlay" onClick={!isGenerating ? onClose : undefined}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Δημιουργία Νέας Άσκησης</h2>
+                    <h2>{isProfessor ? 'Δημιουργία Επίσημου Τεστ' : 'Δημιουργία Νέας Άσκησης'}</h2>
                     <button
                         className="modal-close-btn"
                         onClick={onClose}
-                        disable={isGenerating}
+                        disabled={isGenerating}
                     >
                         &#10005;
                     </button>
@@ -55,26 +68,62 @@ export function NewExerciseModal({ isOpen, onClose, topics, onGenerate, isGenera
                             </button>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="topic-select">Ενότητα (Προαιρετικό)</label>
-                            <select
-                                id="topic-select"
-                                className="topic-select"
-                                value={selectedTopicId}
-                                onChange={(e) => setSelectedTopicId(e.target.value)}
-                                disabled={isGenerating}
-                            >
-                                <option value="">Αυτόματη επιλογή</option>
-                                {topics.map((topic) => (
-                                    <option key={topic.id} value={topic.id}>
-                                        {topic.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <p className="topic-description">
-                                {selectedTopic ? selectedTopic.description : "Το σύστημα θα επιλέξει αυτόματα μια ενότητα."}
-                            </p>
-                        </div>
+                        {isProfessor ? (
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="keywords-input">Λέξεις-Κλειδιά</label>
+                                    <input
+                                        id="keywords-input"
+                                        type="text"
+                                        className="topic-select"
+                                        placeholder="π.χ. Loops, Switch, Arrays"
+                                        value={keywords}
+                                        onChange={(e) => setKeywords(e.target.value)}
+                                        disabled={isGenerating}
+                                        required
+                                    />
+                                    <p className="topic-description">
+                                        Το AI θα δημιουργήσει ερωτήσεις βασισμένες σε αυτές τις έννοιες και θα τις δημοσιεύσει σε όλους τους φοιτητές.
+                                    </p>
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="num-questions-input">Πλήθος Ερωτημάτων (1 - 10)</label>
+                                    <input
+                                        id="num-questions-input"
+                                        type="number"
+                                        min={1}
+                                        max={10}
+                                        className="topic-select"
+                                        value={numQuestions}
+                                        onChange={(e) => setNumQuestions(e.target.value)}
+                                        disabled={isGenerating}
+                                        required
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <div className="form-group">
+                                <label htmlFor="topic-select">Ενότητα (Προαιρετικό)</label>
+                                <select
+                                    id="topic-select"
+                                    className="topic-select"
+                                    value={selectedTopicId}
+                                    onChange={(e) => setSelectedTopicId(e.target.value)}
+                                    disabled={isGenerating}
+                                >
+                                    <option value="">Αυτόματη επιλογή</option>
+                                    {topics.map((topic) => (
+                                        <option key={topic.id} value={topic.id}>
+                                            {topic.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className="topic-description">
+                                    {selectedTopic ? selectedTopic.description : "Το σύστημα θα επιλέξει αυτόματα μια ενότητα."}
+                                </p>
+                            </div>
+                        )}
 
                         <div className="modal-actions">
                             <button
