@@ -1,9 +1,30 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import api from "../api/axiosConfig";
 
-const AuthContext = createContext(); 
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
     const [token, setToken] = useState(() => localStorage.getItem('access_token'));
+    const [profile, setProfile] = useState({});
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (!token) {
+                setProfile({});
+                return;
+            }
+            try {
+                const response = await api.get('/users/profile');
+                setProfile(response.data);
+            } catch (error) {
+                console.error("Σφάλμα στην φόρτωση του προφίλ: ", error);
+            }
+        };
+
+        fetchProfile();
+    }, [token]);
+
+    const isProfessor = profile?.role === 'professor';
 
     const login = (newAccessToken, newRefreshToken) => {
         localStorage.setItem('access_token', newAccessToken);
@@ -20,7 +41,7 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ token, login, logout }}>
+        <AuthContext.Provider value={{ token, login, logout, profile, setProfile, isProfessor }}>
             {children}
         </AuthContext.Provider>
     )

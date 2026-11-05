@@ -151,8 +151,7 @@ def get_exercises(db: Session, user_id: int):
     exercises = db.query(Exercise).filter(
         (Exercise.creator_id == user_id) | (Exercise.is_public == True)
     ).order_by(Exercise.created_at.desc()).all()
-    if not exercises:
-        return None
+
     return exercises
 
 

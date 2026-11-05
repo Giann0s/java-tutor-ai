@@ -1,8 +1,8 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
-import api from '../api/axiosConfig';
 import { ProfileModal } from './ProfileModal';
+import { ClassOverviewModal } from './ClassOverviewModal';
 import './Sidebar.css';
 
 
@@ -12,31 +12,19 @@ export function Sidebar({
     currentId,
     setCurrentId,
     handleNewAction,
-    handleDeleteItem
+    handleDeleteItem,
+    handleNewTopic
 }) {
-    const { token, logout } = useContext(AuthContext);
+    const { logout, profile, setProfile, isProfessor } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const [profile, setProfile] = useState({});
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const response = await api.get('/users/profile');
-                setProfile(response.data);
-            } catch (error) {
-                console.error("Σφάλμα στην φόρτωση του προφίλ: ", error);
-            }
-        };
-
-        if (token) {
-            fetchProfile();
-        }
-
-    }, [token]);
+    const [isOverviewModalOpen, setIsOverviewModalOpen] = useState(false);
 
     const isChat = mode === "chat";
+
+    const chatRoute = '/home';
+    const exerciseRoute = '/exercises';
 
     const initials = profile?.first_name && profile?.last_name ? `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}` : 'U';
 
@@ -50,10 +38,21 @@ export function Sidebar({
                 {/* Button for switching between exercise page and chat page */}
                 <button
                     className="switch-btn"
-                    onClick={() => navigate(isChat ? '/exercises' : '/home-student')}
+                    onClick={() => navigate(isChat ? exerciseRoute : chatRoute)}
                 >
                     {isChat ? 'Ασκήσεις' : 'Συνομιλία'}
                 </button>
+
+                {/* Extra button only for the professor */}
+                {isProfessor && (
+                    <button
+                        className="switch-btn"
+                        onClick={() => setIsOverviewModalOpen(true)}
+                    >
+                        Επισκόπηση Τάξης
+                    </button>
+                )}
+
 
                 {/* Button for creating new conversation/exercise */}
                 <button
@@ -62,6 +61,16 @@ export function Sidebar({
                 >
                     {isChat ? 'Νέα Συζήτηση' : 'Νέα Άσκηση'}
                 </button>
+
+
+                {isProfessor && mode === "exercises" && handleNewTopic && (
+                    <button
+                        className="new-item-btn"
+                        onClick={handleNewTopic}
+                    >
+                        Κεφάλαια
+                    </button>
+                )}
 
                 <div className="chat-container">
                     <h3>{isChat ? "Ιστορικό συζητήσεων" : "Ιστορικό ασκήσεων"}</h3>
@@ -73,7 +82,7 @@ export function Sidebar({
                                 onClick={() => setCurrentId(item.id)}
                             >
                                 <span className="item-title">
-                                    {!isChat && item.is_public ? `🎓 ${item.title}` : item.title}
+                                    {!isChat && item.is_public ? `✒ ${item.title}` : item.title}
                                 </span>
 
                                 {isChat && handleDeleteItem && (
@@ -93,6 +102,7 @@ export function Sidebar({
 
                     </ul>
                 </div>
+
                 <div className="profile-container" onClick={() => setIsProfileModalOpen(true)}>
                     <div className="profile-avatar">{initials}</div>
                     <div className="user-info">
@@ -114,6 +124,13 @@ export function Sidebar({
                 profile={profile}
                 setProfile={setProfile}
             />
+
+            {isProfessor && (
+                <ClassOverviewModal
+                    isOpen={isOverviewModalOpen}
+                    onClose={() => setIsOverviewModalOpen(false)}
+                />
+            )}
         </>
     )
 

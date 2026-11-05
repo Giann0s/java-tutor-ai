@@ -1,0 +1,136 @@
+.modal-content.topics-modal-content {
+    max-width: 560px;
+    width: 90%;
+}
+
+.topic-error-msg {
+    color: rgb(239, 68, 68);
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    margin: 0;
+}
+
+.topic-input,
+.topic-textarea {
+    width: 100%;
+    background-color: rgb(18, 18, 18);
+    color: rgb(236, 236, 236);
+    border: 1px solid rgb(55, 55, 55);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.topic-input:focus,
+.topic-textarea:focus {
+    border-color: rgb(59, 130, 246);
+}
+
+.topic-textarea {
+    resize: none;
+    height: 85px;
+    line-height: 1.5;
+    scrollbar-width: none;
+}
+
+.topics-list-section {
+    margin-top: 22px;
+    border-top: 1px solid rgb(48, 48, 48);
+    padding-top: 16px;
+}
+
+.topics-list-title {
+    margin: 0 0 12px 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: rgb(156, 163, 175);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.topics-list-container {
+    max-height: 230px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(65, 65, 65) transparent;
+}
+
+.topic-item-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: rgb(32, 32, 32);
+    border: 1px solid rgb(48, 48, 48);
+    border-radius: 10px;
+    gap: 14px;
+    transition: border-color 0.2s;
+}
+
+.topic-item-card:hover {
+    border-color: rgb(70, 70, 70);
+}
+
+.topic-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.topic-item-name {
+    font-size: 14.5px;
+    color: rgb(240, 240, 240);
+}
+
+.topic-item-desc {
+    font-size: 13px;
+    color: rgb(156, 163, 175);
+    line-height: 1.4;
+}
+
+.topic-item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.topic-action-btn {
+    background-color: rgb(45, 45, 45);
+    border: 1px solid rgb(65, 65, 65);
+    color: rgb(210, 210, 210);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.topic-action-btn.edit-btn:hover {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-color: rgb(59, 130, 246);
+    color: rgb(147, 197, 253);
+}
+
+.topic-action-btn.delete-btn {
+    color: rgb(239, 68, 68);
+}
+
+.topic-action-btn.delete-btn:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: rgb(239, 68, 68);
+}

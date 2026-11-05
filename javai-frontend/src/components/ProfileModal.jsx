@@ -152,7 +152,7 @@ export function ProfileModal({ isOpen, onClose, profile, setProfile }) {
                             type="password"
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
-                            placeholder="••••••••"
+                            placeholder="Εισάγετε τον τρέχων κωδικό"
                             required
                         />
                     </div>
@@ -162,7 +162,7 @@ export function ProfileModal({ isOpen, onClose, profile, setProfile }) {
                             type="password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="••••••••"
+                            placeholder="Εισάγετε τον νέο κωδικό"
                             required
                         />
                     </div>

@@ -92,18 +92,18 @@
     color: rgb(180, 180, 180);
 }
 
-.form-group {
+.profile-modal-card .form-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.form-group label {
+.profile-modal-card .form-group label {
     font-size: 13px;
     color: rgb(170, 170, 170);
 }
 
-.form-group input {
+.profile-modal-card .form-group input {
     background-color: rgb(20, 20, 20);
     border: 1px solid rgb(65, 65, 65);
     border-radius: 8px;

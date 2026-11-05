@@ -1,14 +1,14 @@
-import './StudentHome.css';
+import './Home.css';
 import { Sidebar } from '../../components/Sidebar.jsx';
 import { ChatMessage } from '../../components/ChatMessage.jsx';
 import { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api/axiosConfig';
+import api from '../../api/axiosConfig.js';
 import AuthContext from '../../context/AuthContext.jsx';
 import { formatTime } from '../../utils/formatTime.js';
 
-export function StudentHome() {
-    const { token } = useContext(AuthContext);
+export function Home() {
+    const { token, isProfessor } = useContext(AuthContext);
     const navigate = useNavigate();
     const chatContainerRef = useRef(null);
 
@@ -92,7 +92,8 @@ export function StudentHome() {
                 user_text: userText
             }
 
-            const response = await api.post('/chat/', payload);
+            const endpoint = isProfessor ? '/chat/professor' : '/chat/';
+            const response = await api.post(endpoint, payload);
             const modelMsg = {
                 id: crypto.randomUUID(),
                 sender_role: "model",

@@ -34,7 +34,7 @@ export function Login() {
             const response = await api.post('/auth/login', formData);
 
             login(response.data.access_token, response.data.refresh_token);
-            navigate('/home-student');
+            navigate('/home');
         } catch (error) {
             if (error.response) {
                 setError("Λάθος email ή κωδικός. Δοκιμάστε ξανά.");
