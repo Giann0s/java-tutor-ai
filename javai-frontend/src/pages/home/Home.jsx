@@ -2,14 +2,12 @@ import './Home.css';
 import { Sidebar } from '../../components/Sidebar.jsx';
 import { ChatMessage } from '../../components/ChatMessage.jsx';
 import { useContext, useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../api/axiosConfig.js';
 import AuthContext from '../../context/AuthContext.jsx';
 import { formatTime } from '../../utils/formatTime.js';
 
 export function Home() {
     const { token, isProfessor } = useContext(AuthContext);
-    const navigate = useNavigate();
     const chatContainerRef = useRef(null);
 
     const [conversations, setConversations] = useState([]);
@@ -17,12 +15,6 @@ export function Home() {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [isSending, setIsSending] = useState(false); // for preventing new messages while the AI is answering
-
-    useEffect(() => {
-        if (!token) {
-            navigate('/login');
-        }
-    }, [token, navigate]);
 
     //GET all conversations
     useEffect(() => {

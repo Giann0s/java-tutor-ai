@@ -1,6 +1,5 @@
 import './Exercise.css';
-import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import api from '../../api/axiosConfig';
 import AuthContext from '../../context/AuthContext';
 import { Sidebar } from '../../components/Sidebar';
@@ -11,7 +10,6 @@ import { TopicsModal } from '../../components/TopicsModal';
 
 export function Exercise() {
     const { token, isProfessor } = useContext(AuthContext);
-    const navigate = useNavigate();
 
     // States for the modal and sidebar
     const [exercises, setExercises] = useState([]);
@@ -28,12 +26,6 @@ export function Exercise() {
     const [userAnswers, setUserAnswers] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submissionResult, setSubmissionResult] = useState(null);
-
-    useEffect(() => {
-        if (!token) {
-            navigate('/login');
-        }
-    }, [token, navigate]);
 
     // Fetch exercise history and topics
     useEffect(() => {
@@ -59,7 +51,7 @@ export function Exercise() {
     }, [token]);
 
     // Fetch details of a specific exercise
-    const fetchExerciseDetails = async (exercise_id) => {
+    const fetchExerciseDetails = useCallback(async (exercise_id) => {
         try {
             const endpoint = isProfessor ? `/exercise/professor/${exercise_id}` : `/exercise/${exercise_id}`;
 
@@ -77,18 +69,16 @@ export function Exercise() {
         } catch (error) {
             console.error("Σφάλμα στην φόρτωση της άσκησης: ", error);
         }
-    };
+    }, [isProfessor])
 
     useEffect(() => {
-        const temp = () => {
+        if (currentExerciseId !== null) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSubmissionResult(null);
             fetchExerciseDetails(currentExerciseId);
-        };
-
-        if (currentExerciseId !== null) {
-            temp();
         }
-    }, [currentExerciseId]);
+
+    }, [currentExerciseId, fetchExerciseDetails]);
 
     // New exercise
     const handleGenerateExercise = async (type, data) => {
@@ -136,7 +126,7 @@ export function Exercise() {
             return;
         }
 
-         setIsSubmitting(true);
+        setIsSubmitting(true);
         try {
             const payload = {
                 answers: currentExercise.questions.map((q) => ({

@@ -8,6 +8,7 @@ export function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
@@ -17,7 +18,7 @@ export function Login() {
 
     useEffect(() => {
         if (location.state?.successMessage) {
-            navigate(location.pathname, {replace: true, state: {}});
+            navigate(location.pathname, { replace: true });
         }
     }, [location, navigate]); //for deleting the state so that the success message disappears after reloading
 
@@ -25,6 +26,7 @@ export function Login() {
         e.preventDefault();
         setError('');
         setSuccessMessage('');
+        setIsSubmitting(true);
 
         const formData = new URLSearchParams();
         formData.append('username', email);
@@ -32,19 +34,16 @@ export function Login() {
 
         try {
             const response = await api.post('/auth/login', formData);
-
-            login(response.data.access_token, response.data.refresh_token);
-            navigate('/home');
+            await login(response.data.access_token, response.data.refresh_token);
         } catch (error) {
             if (error.response) {
                 setError("Λάθος email ή κωδικός. Δοκιμάστε ξανά.");
-                setEmail('');
-                setPassword('');
             } else {
                 setError("Σφάλμα σύνδεσης.");
-                setEmail('');
-                setPassword('');
             }
+            setEmail('');
+            setPassword('');
+            setIsSubmitting(false);
         }
     };
 
@@ -78,7 +77,7 @@ export function Login() {
                             required
                         />
                     </div>
-                    <button type="submit" className="submit-btn">Είσοδος</button>
+                    <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Σύνδεση...' : 'Είσοδος'}</button>
                 </form>
 
                 <div className="action-prompt">
