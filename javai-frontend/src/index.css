@@ -50,3 +50,7 @@ body {
     color: rgb(229, 231, 235);
     padding: 0;
 }
+
+html, body, #root {
+    background: rgb(18, 18, 18);
+}

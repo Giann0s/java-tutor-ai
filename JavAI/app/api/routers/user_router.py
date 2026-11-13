@@ -49,6 +49,11 @@ async def get_user_info(user: user_dependency):
     return user
 
 
+@router.get("/", response_model=list[UserResponse], status_code=status.HTTP_200_OK)
+async def get_all_users(db: db_dependency, admin: admin_dependency):
+    return user_service.get_all_users(db)
+
+
 @router.patch("/profile", response_model=UserResponse, status_code=status.HTTP_200_OK)
 async def update_user_info(user: user_dependency, updated_info: UpdateUser, db: db_dependency):
     updated_user = user_service.update_user_info(user, updated_info, db)

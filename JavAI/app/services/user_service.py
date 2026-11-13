@@ -5,6 +5,10 @@ from app.core.security import hash_password, verify_password
 from app.schemas.user_schemas import CreateUser, UpdateUser, UpdatePassword
 
 
+def get_all_users(db: Session):
+    return db.query(User).order_by(User.id.asc()).all()
+
+
 def get_user_by_id(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
@@ -56,6 +60,3 @@ def update_user_password(db: Session, user: User, password_data: UpdatePassword)
 def delete_user(db: Session, user: User):
     db.delete(user)
     db.commit()
-
-
-
